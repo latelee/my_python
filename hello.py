@@ -1,16 +1,15 @@
 #!/usr/bin/python
 # python学习
 
+'''
+本文件描述，如果是这种形式的注释，又是中文，则要使用UTF(有无BOM均可)
+'''
+
 # 第一个打印语句
 print("hello python.")
 
 f = 4/3;
 print("input %s " % f)
-
-'''
-函数定义，注意后面的冒号
-如果是这种形式的注释，又是中文，则要使用UTF(有无BOM均可)
-'''
 
 def sayhello(name, age = 25):
     print('Name: %s; Age: %d' % (name, age)) # 多个变量打印
@@ -19,6 +18,7 @@ def sayhello(name, age = 25):
 sayhello("Jim Kent")
 sayhello("Late Lee", 3)
 
+# 函数定义，注意后面的冒号
 def list_test(self):
     list=[1, 2, 3, 4]
     list.append(10)
