@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # encoding: utf-8
 # 基于python 3.4 发送邮件测试示例，本代码文件使用UTF-8格式
 
@@ -10,8 +10,9 @@ import email.utils
 from email.mime.text import MIMEText
 
 # 接收邮件地址
-#to_email = 'lijj@signalway.com.cn'
-to_email = 'latelee@163.com'
+to_email = 'lijj@signalway.com.cn'
+#to_email = str.splitfields(to_email, ",")
+#to_email = 'latelee@163.com'
 
 # 发送者信(最好是马甲邮箱)
 smtpserver = 'smtp.163.com'
@@ -19,17 +20,31 @@ snd_email = 'rtl8019as@163.com'
 username = snd_email
 password = b'cnRsODAxOWFzPTEwMA=='
 
+
 subject = 'python email test'
 
-msg = MIMEText('这是一个测试邮件', 'html', 'utf-8')
+def send_email(to_list, sub, content):
+    msg = MIMEText(content, 'html', 'utf-8')
+    msg['Subject'] = sub
+    #msg['From'] = email.utils.formataddr(('py发送者', snd_email)) # 发件人：py发送者<xxx@163.com>
+    msg['From'] = snd_email
+    msg['To'] = to_list
+    #msg['Date'] = formatdate(localtime=True)
 
-msg['Subject'] = subject
-msg['From'] = email.utils.formataddr(('py发送者', snd_email)) # 发件人：py发送者<xxx@163.com>
-msg['To'] = to_email
-#msg['Date'] = formatdate(localtime=True)
+    try:
+        smtp = smtplib.SMTP()
+        smtp.connect(smtpserver)
+        smtp.login(username, bytes.decode(base64.b64decode(password)))
+        smtp.sendmail(snd_email, to_list, msg.as_string())
+        smtp.quit()
+        return 0
+    except Exception as e:
+        print(str(e))
+        return -1
 
-smtp = smtplib.SMTP()
-smtp.connect(smtpserver)
-smtp.login(username, bytes.decode(base64.b64decode(password)))
-smtp.sendmail(snd_email, to_email, msg.as_string())
-smtp.quit()
+# main...
+if __name__ == '__main__':  
+    if send_email(to_email, "hello", "hello world") == 0:  
+        print("send %s ok" % to_email)
+    else:  
+        print("send failed")

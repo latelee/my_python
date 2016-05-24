@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # encoding: utf-8
 
 # ¼ÆÊı²âÊÔÊ¾Àı
@@ -47,10 +47,3 @@ def file_counter(file):
 if __name__ == '__main__':
     #counter_test()
     file_counter("test.txt")
-
-
-
-
-
-
-        
