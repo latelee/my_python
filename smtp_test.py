@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # encoding: utf-8
 # 基于python 3.4 发送邮件测试示例，本代码文件使用UTF-8格式
+# 隐藏账户信息
 
 import os
 import base64
@@ -10,15 +11,14 @@ import email.utils
 from email.mime.text import MIMEText
 
 # 接收邮件地址
-to_email = 'lijj@signalway.com.cn'
+to_email = 'latelee@163.com'
 #to_email = str.splitfields(to_email, ",")
-#to_email = 'latelee@163.com'
 
 # 发送者信(最好是马甲邮箱)
 smtpserver = 'smtp.163.com'
 snd_email = 'rtl8019as@163.com'
 username = snd_email
-password = b'cnRsODAxOWFzPTEwMA=='
+password = b'ccccccnRsODAxOWFzPTEwMA=='
 
 
 subject = 'python email test'
