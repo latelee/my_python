@@ -16,9 +16,9 @@ to_email = 'latelee@163.com'
 
 # 发送者信(最好是马甲邮箱)
 smtpserver = 'smtp.163.com'
-snd_email = 'rtl8019as@163.com'
+snd_email = 'rtl8019ads@163.com'
 username = snd_email
-password = b'ccccccnRsODAxOWFzPTEwMA=='
+password = b'ccccccnRsceeggO3DAxOWFzPeTEwMA=='
 
 
 subject = 'python email test'

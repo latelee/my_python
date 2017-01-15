@@ -1,9 +1,8 @@
 #!/usr/bin/python3
 # encoding: utf-8
-# 执行系统ping命令，失败发送邮件通知对应的人。
-# 实际就由crontab来定时执行此程序
-# ifconfig eth0 add 192.168.1.87
-# 隐藏账户信息
+# 
+#  ifconfig eth0 add 192.168.1.87
+
 import os
 import base64
 
@@ -18,14 +17,16 @@ import datetime
 import subprocess
 
 # 接收邮件地址
-to_email = ['aa@163.com'] # 多个收件人，在其后添加
+to_email = ['a@aa.com.cn', 'b@aa.com.cn'] # 多个收件人，在其后添加
 
-
-# 发送者信息
+# 发送者信(最好是马甲邮箱)
 smtpserver = 'smtp.exmail.qq.com'
-snd_email = 'XXX@XXX.com.cn'
+snd_email = 'a@aa.com.cn'
 username = snd_email
-password = b'333F333sd32F5MjAxMUpKTA=='
+password = b'U2lfnb3mFsd3dd2F533f3MjAx3MUpKTA=='
+
+
+subject = 'python email test'
 
 def send_email(to_list, sub, content):
     msg = MIMEText(content, 'html', 'utf-8')
@@ -47,6 +48,12 @@ def send_email(to_list, sub, content):
     except Exception as e:
         print(str(e))
         return -1
+
+#    if send_email(to_email, "hello", "hello world") == 0:  
+#        print("send %s ok" % to_email)
+#    else:  
+#        print("send failed")
+
 
 #######################################
 # ping -c 2 172.18.44.63 | grep '0 received' | wc -l
@@ -73,7 +80,8 @@ def wirte_file(content):
     f.close()
 
 ################################
-device_ip = ["172.18.37.121", "192.168.1.11", "172.18.44.65", "192.168.1.65", "172.18.44.112", "192.168.1.112"]
+## , "172.18.44.112", "192.168.1.112"
+device_ip = ["172.18.37.121", "192.168.1.11", "172.18.44.65", "192.168.1.65"]
 # main...
 if __name__ == '__main__':
     total_ret = 0
@@ -86,7 +94,11 @@ if __name__ == '__main__':
         if ret != 0:
             total_ret += 1;
         buffer += "ping设备IP %s 结果: %s </br>\n" % (device_ip[i], ret and "失败" or "成功") # 组装
+        
+        #print("%s" % buffer)
+        #print("1111 ping %s result: %d" % (device_ip[i], ret))
         time.sleep(0.1)
+    #print("%s" % buffer)
     
     buffer += "</br></br> [本邮件为系统自动发送，勿回复] </br>\n"
     buffer += "</br>\n"
@@ -94,10 +106,10 @@ if __name__ == '__main__':
     # 如果出错,立即发送
     if total_ret > 0:
         wirte_file(buffer)
-        send_email(to_email, "ping测试结果", buffer)
+        send_email(to_email, "网络ping测试结果", buffer)
         #print("ping  fail")
     # 否则17点发送
-    else:
-        if (nowtime == '17:00'):
-            wirte_file(buffer)
-            send_email(to_email, "ping测试结果", buffer)
+    #else:
+    #    if (nowtime == '17:00'):
+    #        wirte_file(buffer)
+    #        send_email(to_email, "网络ping测试结果", buffer)
