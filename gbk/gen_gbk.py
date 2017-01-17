@@ -9,13 +9,9 @@ SRC = "gbkuni30.txt"
 DST = "gbkuni30_gen1.h"
 ARRAY = "gbkuni30"
 
-buffer = [] # 空列表
+buffer = [0]*65535 # 初始化65535个空列表
 max_num = 0
 
-# 初始化好buffer，一共65535
-for i in range(0, 65535):
-    buffer.append(0x0)
-    
 try:
     f = open(SRC, 'r')
     while True:
