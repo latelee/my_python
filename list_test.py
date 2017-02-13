@@ -29,3 +29,16 @@ del mylist[1] # 删除
 print("new mylist: %s" % (mylist));
 
 print("mylist[-1]: %s max number: %d" % (mylist[-1], max(mylist)));
+
+# list嵌套list测试
+a = ['tittle1', 'http:aaaaa']
+b = []
+b.append(a)
+
+t1 = []
+t1.append('bbbb')
+t1.append('http:bbbbbbbbbbbb')
+b.append(t1)
+
+print(b)
+print(b[1][1])

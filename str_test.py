@@ -57,3 +57,10 @@ print("-".join(str1)); # 每个字符之间用“-”连接
 L1 = ['Hello', 'World', 18, 'Apple', None]
 L2 = [s.lower() for s in L1 if isinstance(s,str)]
 print("L2: %s" % L2);
+
+img_url = "http://aa.org/deig/9865744.jpg"
+name = img_url.split('/')[-1] # 以/分隔，取最后一个元素，即为文件名
+if name.find('.') == -1:
+    name += '.jpg'
+print(name)
+
