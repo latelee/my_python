@@ -28,7 +28,7 @@ my_g_lunar_month_day = [
 	0x30111a9b, 0x2c50052b, 0x2c700a5b, 0x30109aae, 0x2c50056a, 0x3031ddd5, 0x2c500ba4, 0x2c500b49, 0x30115d53, 0x2c500a95, # 2001 ~ 2010 
 	0x2c50052d, 0x3011155d, 0x2c700ab5, 0x30125baa, 0x2c5005d2, 0x2c700da5, 0x3011be8a, 0x2c500d4a, 0x2c500c95, 0x300d1a9e, # 2011 ~ 2020 
 	0x2c4c0556, 0x2c700ab5, 0x30109ada, 0x2c5006d2, 0x30119765, 0x2c500725, 0x2c50064b, 0x300d5657, 0x2c6c0cab, 0x2c50055a, # 2021 ~ 2030 
-	0x3010d56e, 0x2c700b69, 0x2ff2db52, 0x2c500b52, 0x2c500b25, 0x300dbd0b, 0x2c500a4b, 0x2c5004ab, 0x301152bb, 0x2c7005ad, # 2031 ~ 2040 
+	0x3010d56e, 0x2c700b69, 0x3012df52, 0x2c500b52, 0x2c500b25, 0x300dbd0b, 0x2c500a4b, 0x2c5004ab, 0x301152bb, 0x2c7005ad, # 2031 ~ 2040 
 	0x2c6c0b6a, 0x30109daa, 0x2c500d92, 0x300ddea5, 0x2c500d25, 0x2c500a55, 0x30117a4d, 0x2c5004b6, 0x2c6c05b5, 0x3010f6d2, # 2041 ~ 2050 
 	0x2c700ec9, 0x300e1f92, 0x2c4c0e92, 0x2c4c0d26, 0x2ff1b516, 0x2c6c0a57, 0x2c4c0556, 0x30113365, 0x2c700755, 0x2c500749, # 2051 ~ 2060 
 	0x300cd74b, 0x2c4c0693, 0x3011daab, 0x2c4c052b, 0x2c6c0a5b, 0x30115aba, 0x2c50056a, 0x2c700b65, 0x300d1baa, 0x2c4c0b4a, # 2061 ~ 2070 
@@ -39,7 +39,7 @@ my_g_lunar_month_day = [
 #==================================================================================
 
 from datetime import date, datetime
-from calendar import Calendar as Cal
+import calendar 
 
 START_YEAR = 1901
 
@@ -94,8 +94,14 @@ def m_lunar(lm):
         month = "闰" + month
     return month
 
+def d_lunar1(lm, ld):
+    if ld == 1:
+        return m_lunar(lm)
+    else:
+        return riqi[ld - 1]
+
 def y_lunar(ly):
-    return tiangan[(ly - 4) % 10] + dizhi[(ly - 4) % 12] + u' ' + shengxiao[(ly - 4) % 12]
+    return tiangan[(ly - 4) % 10] + dizhi[(ly - 4) % 12] + '[' + shengxiao[(ly - 4) % 12] + ']'
 
 def date_diff(tm):
     return (tm - datetime(1901, 1, 1)).days
@@ -123,8 +129,6 @@ def lunar_month_days(lunar_year, lunar_month):
         else:
             leap_day = 29
         leap_month = (tmp >> LM_NUM_BIT) & 0xf
-
-        #print("!!!we have leap month: ", leap_month, leap_day)
 
     #print("debug: year: %d month: %d (%d %d)0x%x" % (lunar_year, lunar_month, leap_day, month_day, my_g_lunar_month_day[lunar_year - START_YEAR]));
     return (leap_month, leap_day, month_day)
@@ -158,9 +162,9 @@ def get_ludar_date(tm):
     #print("span_days %d" % span_days)
     #阳历1901年2月19日为阴历1901年正月初一
     #阳历1901年1月1日到2月19日共有49天
-    if (span_days <49):
+    if (span_days < 49):
         year = START_YEAR - 1
-        if (span_days <19):
+        if (span_days < 19):
           month = 11;
           day = 11 + span_days
         else:
@@ -168,22 +172,18 @@ def get_ludar_date(tm):
             day = span_days - 18
         return (year, month, day)
 
-    #下面从阴历1901年正月初一算起
     span_days -= 49
     year, month, day = START_YEAR, 1, 1 # 从1901.1.1开始计算
     #计算年
     tmp = lunar_year_days(year)
-    #print("year1: %d span: %d tmp: %d 0x%x" % (year, span_days, tmp, g_lunar_month_day[year - START_YEAR]))
     # 如果间隔大于1901年，则要继续循环计算时间，否则在1901年
     while span_days >= tmp:
         span_days -= tmp
         year += 1
         tmp = lunar_year_days(year)
-        #print("year11: %d span: %d tmp: %d 0x%x" % (year, span_days, tmp, g_lunar_month_day[year - START_YEAR]))
     # span还有，说明是下一年之内的，则计算月
     #计算月
     (leap_month, foo, tmp) = lunar_month_days(year, month)
-    #print(" month %d span: %d tmp: %d" % (month, span_days, tmp))
     while span_days >= tmp:
         span_days -= tmp
         if (month == leap_month):
@@ -199,16 +199,35 @@ def get_ludar_date(tm):
     day += span_days
     return (year, month, day)
 
-def simple_test():
-    lunar_year_days(1901)
-    lunar_year_days(1902)
-    lunar_year_days(1903)
-    print('=============')
-
 def show_month(tm):
     (ly, lm, ld) = get_ludar_date(tm)
     print("%d年%d月%d日" % (tm.year, tm.month, tm.day), week_str(tm), end='')
     print("\t农历 %s年 %s年%s%s " % (y_lunar(ly), change_year(ly), m_lunar(lm), d_lunar(ld))) # 根据数组索引确定
+    print("一\t二\t三\t四\t五\t六\t日")
+ 
+    c = calendar.Calendar(0)
+    ds = [d for d in c.itermonthdays(tm.year, tm.month)]
+    
+    #print(len(ds), ds)
+    # 利用calendar直接获取指定年月日期
+    count = 0
+    for d in ds:
+        if d == 0:
+            print("\t", end='')
+            count += 1
+            continue
+
+        (ly, lm, ld) = get_ludar_date(datetime(tm.year, tm.month, d))
+
+        if count % 7 == 0:
+            print("\n", end='')
+        d_str = str(d)
+        if d == tm.day:
+            d_str = "*" + d_str
+        print("%s\t" % (d_str + d_lunar1(lm, ld)), end='')
+        #print("%s\t" % (d_str), end='')
+        count += 1
+    print("")
 
 def _show_month(year, month, day):
     tmp = datetime(year, month, day)
@@ -216,30 +235,12 @@ def _show_month(year, month, day):
     print('==========================================')
 
 def this_month():
+    #print(calendar.month(datetime.now().year, datetime.now().month))
+    #print('--------------------------')
     _show_month(datetime.now().year, datetime.now().month, datetime.now().day)
 
-#simple_test()
 this_month()
-_show_month(1901, 1, 1)
-_show_month(1901, 2, 18)
-_show_month(1901, 2, 19)
-_show_month(1902, 4, 1)
-_show_month(1903, 6, 24)
-_show_month(1903, 6, 25)
-_show_month(1903, 6, 26)
-_show_month(1903, 12, 28)
-_show_month(1905, 7, 12)
-_show_month(1906, 5, 21)
-_show_month(1906, 5, 30)
-_show_month(1906, 7, 8)
-print("===================")
-_show_month(2017, 7, 1)
-_show_month(2017, 8, 1)
-_show_month(2033, 12, 20)
-_show_month(2033, 12, 21)
-_show_month(2033, 12, 22)
-_show_month(2033, 12, 31)
 _show_month(2034, 1, 1)
-_show_month(2034, 2, 1)
+_show_month(2047, 6, 1)
 #_show_month(1903, 4, 1)
 

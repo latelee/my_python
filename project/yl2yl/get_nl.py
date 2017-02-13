@@ -12,17 +12,17 @@
 #　算法
 # 1、获取天文台网页(big5编码格式)，将每行分隔成列表形式(具体参考上述网址)
 #   2063(癸未 - 肖羊)年公曆與農曆日期對照表
-#   
+#
 #   公曆日期              農曆日期    星期        節氣
-#   2063年1月1日          初二        星期一              
-#   2063年1月2日          初三        星期二              
-#   2063年1月3日          初四        星期三              
-#   2063年1月4日          初五        星期四  
+#   2063年1月1日          初二        星期一
+#   2063年1月2日          初三        星期二
+#   2063年1月3日          初四        星期三
+#   2063年1月4日          初五        星期四
 # 。。。
-#   2063年1月28日         廿九        星期日              
-#   2063年1月29日         正月        星期一              
-#   2063年1月30日         初二        星期二              
-#   2063年1月31日         初三        星期三 
+#   2063年1月28日         廿九        星期日
+#   2063年1月29日         正月        星期一
+#   2063年1月30日         初二        星期二
+#   2063年1月31日         初三        星期三
 # 2、遍历列表，获取“X月”那一行，前一行即为上月月份日数 －－所以代码中需要进行减1操作
 # 3、由于农历跨年，所以需要全局变量，并且只能在“正月”才能统计上一年日历数据
 # 4、闰月根据关键字判断，由于是计算“上月”，所以闰月需要与相同的月份交换
@@ -56,6 +56,7 @@ lichun_d = 0
 chunjie_m, chunjie_d = 0, 0
 day_cnt = 1
 y_nl = 0
+leap_flag = 0
 monthlist=[0]*20 # 第一个即为年份
 
 binary_data = 0
@@ -74,7 +75,7 @@ def get_last_date(url, year):
 
     print(" ---check again for %s " % (new_url))
     tmp = src.split('\n')
-    
+
     # 最后一行可能为空，这里倒序查找
     j = 0
     for i in range(1, 100):
@@ -85,16 +86,16 @@ def get_last_date(url, year):
             break;
     ret = monthdict[tmp[-j].split()[1]]
     #print(" ret: %d" % (ret))
-    
+
     return ret
 
 def get_nongli(url, year1, year2):
     global f
     global error_f
-    
+
     f = open("nongli.txt", "w")
     error_f = open("error.txt", "w")
-    
+
     test  = "#####################################################################################\n"
     test += "# 1901~2100年阴历数据表\n"
     test += "# powered by Late Lee, http://www.latelee.org \n"
@@ -116,7 +117,7 @@ def get_nongli(url, year1, year2):
     test = "]\n"
     f.write(test)
     f.close()
-    
+
     error_f.close()
 
 def aaaa(url, year):
@@ -130,13 +131,14 @@ def aaaa(url, year):
     global binary_data
     global f
     global line_cnt
+    global leap_flag
 
     new_url = url + "T%dc.txt" % year
     request = urllib.request.Request(new_url)
     response = urllib.request.urlopen(request)
     src = response.read().decode('big5')
     print("parsing for %s" % new_url)
-    
+
     tmp = src.split('\n')
 
     # 第三行才是真正的数据
@@ -161,7 +163,7 @@ def aaaa(url, year):
                 #print("  --春节：%d年%d月%d日" % (yy_nl, m, d))
                 break;
 
-    leap_flag = 0
+
     total_date = 0
     for i in range(start_row, len(tmp)): # len(tmp)-3
         tmpp = tmp[i].split() # 格式：1903年01月01日 初三 星期四 [节气]
@@ -184,6 +186,17 @@ def aaaa(url, year):
             yy_nl = y - 1
             monthlist[0] = yy_nl
             monthlist[mydict[yue[0:]]-1] = day_cnt
+            # 由于计算月份日期是在次月方知，所以闰月与非闰月是相反的 (如得到的闰五月日期数实为五月日期数)，这里调换
+            if leap_flag == 1:
+                #print("!!! 有闰月 %d %d " % (leapmonth_m, leapmonth_d))
+                changed_tmp = leapmonth_d
+                leapmonth_d = monthlist[leapmonth_m]
+                monthlist[leapmonth_m] = changed_tmp
+                leap_flag = 0
+            # 消掉全局变量，全年没有闰月时，清零
+            else:
+                leapmonth_m, leapmonth_d, leapmonth_is = 0, 0, 0
+
             i = 13
             monthlist[i] = leapmonth_is
             i+=1
@@ -220,15 +233,15 @@ def aaaa(url, year):
             binary_data |= monthlist[j] << 14
             j+=1
             binary_data |= monthlist[j] << 18
-            
+
             binary_data |= total_date << 21 # 该年农历日期总日数
-            
+
             ######################################################
             line_cnt += 1
             text = str(hex(binary_data)) + ", "
             if line_cnt % 10 == 0:
                 text += "# %d ~ %d \n\t" % (yy_nl-10+1, yy_nl)
-            
+
             f.write(text)
             ######################################################
             #j+=1
@@ -242,7 +255,7 @@ def aaaa(url, year):
             if leapmonth_is != 0:
                 print("  --闰%d月 (大小月？ %d)" % (leapmonth_m, leapmonth_d))
             print("数据: ", monthlist)
-            
+
             print("生成二进制数据：%s" % str(hex(binary_data)))
             monthlist=[0]*20
             binary_data = 0
@@ -260,7 +273,7 @@ def aaaa(url, year):
                     print("error data at: %s " % (gl))
                     error_text = "error data found: %s source: %s\n" %(new_url, tmpp)
                     error_f.write(error_text)
-                    
+
                     # 特殊处理。。。
                     if gl == '2053年12月10日': # 前一天：农历十月三十 星期二
                         day_cnt = 1
@@ -275,21 +288,13 @@ def aaaa(url, year):
             if yue.find('閏') != -1:
                 leap_flag = 1
                 leapmonth_is = 1
-                leapmonth_m = mydict[yue[1:]] # 闰月在该月后面，所以无法减1，如五月后面就是闰五月
+                leapmonth_m = mydict[yue[1:]] # 闰月在该月后面，所以无须减1，如五月后面就是闰五月
                 leapmonth_d = day_cnt
                 #print("闰%d月 有%d天 %d %d %d" % (mydict[yue[1:]], day_cnt, leapmonth_is, leapmonth_d, leapmonth_m))
             else:
                 monthlist[mydict[yue[0:]]-1] = day_cnt
                 #print("%d月 有%d天" % (mydict[yue[0:]]-1, day_cnt))
-    # 由于计算月份日期是在次月方知，所以闰月与非闰月是相反的 (如得到的闰五月日期数实为五月日期数)，这里调换
-    if leap_flag == 1:
-        #print("!!! 有闰月 %d %d " % (leapmonth_m, leapmonth_d))
-        changed_tmp = leapmonth_d
-        leapmonth_d = monthlist[leapmonth_m]
-        monthlist[leapmonth_m] = changed_tmp
-    # 消掉全局变量，全年没有闰月时，清零
-    else:
-        leapmonth_m, leapmonth_d, leapmonth_is = 0, 0, 0
+
 
 def init_python_env():
     if sys.version_info.major == 2:
