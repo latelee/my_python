@@ -23,12 +23,12 @@
 #   2063年1月29日         正月        星期一
 #   2063年1月30日         初二        星期二
 #   2063年1月31日         初三        星期三
-# 2、遍历列表，获取“X月”那一行，前一行即为上月月份日数 －－所以代码中需要进行减1操作
+# 2、遍历列表，获取“XX月”那一行，前一行即为上月月份天数 －－所以代码中需要进行减1操作
 # 3、由于农历跨年，所以需要全局变量，并且只能在“正月”才能统计上一年日历数据
 # 4、闰月根据关键字判断，由于是计算“上月”，所以闰月需要与相同的月份交换
 # 5、将需要信息依次保存到yearlist列表。再转换成二进制。最终生成的格式如下：
 #      ~21       20~18   17~14    13         12         11~0
-#   农历总日数  立春日  闰几月 闰月日数  是否闰月  1~12月份农历日数
+#   农历总天数  立春日  闰几月 闰月天数  是否闰月  1~12月份农历天数
 #
 # 6、个别网页个别日历有误，在代码中手工修正
 #
@@ -37,8 +37,8 @@
 import os
 import sys
 import re
-import datetime
 import time
+from datetime import date, datetime
 
 import urllib.request
 
@@ -64,10 +64,10 @@ yearlist=[0]*20 # 第一个即为年份
 binary_data = 0
 
 f=None
-line_cnt=0
+
 error_f = None
 
-# 网页第一行数据即为“XX月”，需要返回上一网页获取最后一行
+# 网页第一行数据即为“XX月”，需要返回上一网页获取最后一行才是上月真正天数
 def get_last_date(url, year):
     new_url = url + "T%dc.txt" % year
     request = urllib.request.Request(new_url)
@@ -90,54 +90,66 @@ def get_last_date(url, year):
 
     return ret
 
-def open_file(file, array):
+def open_file(file):
     global f
     global error_f
 
     f = open(file, "w")
     error_f = open("error.txt", "w")
 
-    test  = "#####################################################################################\n"
-    test += "# 1901~2100年阴历数据表\n"
-    test += "# powered by Late Lee, http://www.latelee.org \n"
-    test += "# %s \n" % (datetime.datetime.now())
-    test += "#阴历数据 每个元素的存储格式如下： \n"
-    test += "#   16~13    12          11~0  \n"
-    test += "#  闰几月 闰月日数  1~12月份农历日数  \n"
-    test += "# 注：1、bit0表示农历1月份日数，为1表示30天，为0表示29天。bit1表示农历2月份日数，依次类推。 \n"
-    test += "#     2、bit12表示闰月日数，1为30天，0为29天。bit17~bit14表示第几月是闰月(注：为0表示该年无闰月) \n"
-    test += "# 数据来源: http://data.weather.gov.hk/gts/time/conversion1_text_c.htm 由Jim Kent编写python爬虫强力分析\n"
-    test += "#####################################################################################\n"
-
-    test += "%s = [\n\t" % (array)
-    f.write(test)
-
 def get_nongli(url, year1, year2):
     global f
     global error_f
 
-    open_file("nongli.txt", "my_g_lunar_month_day")
-    
+    open_file("nongli.txt")
+
+    ###########
+    text  = "#####################################################################################\n"
+    text += "# 1901~2099年农历数据表\n"
+    text += "# powered by Late Lee, http://www.latelee.org \n"
+    text += "# %s \n" % (datetime.now())
+    text += "#农历数据 每个元素的存储格式如下： \n"
+    text += "#      ~23      22~17   16~13    12          11~0  \n"
+    text += "# 农历总天数 离元旦天数 闰几月 闰月天数  1~12月份农历天数  \n"
+    text += "# 注：1、bit0表示农历1月份天数，为1表示30天，为0表示29天。bit1表示农历2月份天数，依次类推。 \n"
+    text += "#     2、bit12表示闰月天数，1为30天，0为29天。bit13~bit17表示第几月是闰月(注：为0表示该年无闰月) \n"
+    text += "# 数据来源: http://data.weather.gov.hk/gts/time/conversion1_text_c.htm \n""# 由Jim Kent编写python爬虫强力收集并分析\n"
+    text += "#####################################################################################\n"
+    ###############################
+
+    text += "g_lunar_month_day = [\n\t"
+    f.write(text)
+
     for year in range(year1, year2+1):
         aaaa(url, year)
 
-    test = "]\n"
-    f.write(test)
-    f.close()
+    text = "]\n"
+    f.write(text)
+    #f.close()
 
-    error_f.close()
+    #error_f.close()
 
+# 丢弃
 def get_nongli2(url, year1, year2):
     global f
     global error_f
-    
-    open_file("nongli111.txt", "my_g_lunar_day")
-    
+
+    ###########
+    text  = "\n\n"
+    text += "#农历数据 每个元素的存储格式如下： \n"
+    text += "#    12~7         6~5    4~0  \n"
+    text += "#  离元旦多少天  春节月  春节日  \n"
+    text += "#####################################################################################\n"
+    ###############################
+
+    text += "g_lunar_year_day = [\n\t"
+    f.write(text)
+
     for year in range(year1, year2+1):
         bbb(url, year)
 
-    test = "]\n"
-    f.write(test)
+    text = "]\n"
+    f.write(text)
     f.close()
 
     error_f.close()
@@ -152,7 +164,6 @@ def aaaa(url, year):
     global yearlist
     global binary_data
     global f
-    global line_cnt
     global leap_flag
 
     new_url = url + "T%dc.txt" % year
@@ -204,7 +215,7 @@ def aaaa(url, year):
         #print(gl, yue)
         # 在某年正月时，计算上年的日历信息
         if yue == "正月":
-            day_cnt = monthdict[tmp[i-1].split()[1]] # 正月才能确认腊月日数
+            day_cnt = monthdict[tmp[i-1].split()[1]] # 正月才能确认腊月天数
             yy_nl = y - 1
             yearlist[0] = yy_nl
             yearlist[mydict[yue[0:]]-1] = day_cnt
@@ -219,12 +230,16 @@ def aaaa(url, year):
             else:
                 leapmonth_m, leapmonth_d, leapmonth_is = 0, 0, 0
 
+            # 计算该年正月离元旦天数
+            days_yuandan = (datetime(year, chunjie_m, chunjie_d) - datetime(year, 1, 1)).days
+            
+            # 合并成二进制准备的列表
             i = 13
-            #yearlist[i] = leapmonth_is
-            #i+=1
-            yearlist[i] = leapmonth_d
+            yearlist[i] = leapmonth_d # 闰月天数 1为大月30gd ，0为小月29天
             i+=1
-            yearlist[i] = leapmonth_m
+            yearlist[i] = leapmonth_m # 闰月月份
+            i+=1
+            yearlist[i] = days_yuandan # 该年正月离元旦天数
             i+=1
             #yearlist[i] = chunjie_d
             #i+=1
@@ -248,21 +263,17 @@ def aaaa(url, year):
                 else:
                     total_date += 29
             j = 13
-            #binary_data |= yearlist[j] << 12
-            #j+=1
-            binary_data |= yearlist[j] << 12
+            binary_data |= yearlist[j] << 12 # 闰月天数
             j+=1
-            binary_data |= yearlist[j] << 13
-            #j+=1
-            #binary_data |= yearlist[j] << 17
-
-            #binary_data |= total_date << 21 # 该年农历日期总日数
+            binary_data |= yearlist[j] << 13 # 闰月月份
+            j+=1
+            binary_data |= yearlist[j] << 17 # 该年正月离元旦天数
+            binary_data |= total_date << 23 # 该年农历日期总天数
 
             ######################################################
-            line_cnt += 1
             #text = str(hex(binary_data)) + ", "
             text = "0x%05x, " % binary_data # 格式化好一点，前补0
-            if line_cnt % 10 == 0:
+            if yy_nl % 10 == 0:
                 text += "# %d ~ %d \n\t" % (yy_nl-10+1, yy_nl)
 
             f.write(text)
@@ -273,7 +284,7 @@ def aaaa(url, year):
             #binary_data |= yearlist[j] << 25
             #print("%d月 有%d天" % (mydict[yue[0:]]-1, day_cnt))
             print("农历%d年日历小结　" % (yy_nl))
-            print("  --春节：%d年%d月%d日 农历总日期：%d" % (yy_nl, chunjie_m, chunjie_d, total_date))
+            print("  --春节：%d年%d月%d日 离该年元旦有%d天 农历总日期：%d" % (yy_nl, chunjie_m, chunjie_d, days_yuandan, total_date))
             print("  --立春：2月%d日" % (lichun_d))
             if leapmonth_m != 0:
                 print("  --闰%d月 (大小月？ %d)" % (leapmonth_m, leapmonth_d))
@@ -332,7 +343,6 @@ def bbb(url, year):
     global yearlist
     global binary_data
     global f
-    global line_cnt
     global need_write
 
     new_url = url + "T%dc.txt" % year
@@ -379,8 +389,7 @@ def bbb(url, year):
             text = "0x%04x, " % binary_data # 格式化好一点，前补0
             bin_text = str(bin(binary_data))
             print("二进制数据: %s %s" % (text, bin_text))
-            line_cnt += 1
-            if line_cnt % 10 == 0:
+            if year % 10 == 0:
                 text += "# %d ~ %d \n\t" % (year-10+1, year)
 
             f.write(text)
@@ -397,6 +406,8 @@ def init_python_env():
 if __name__ == '__main__':
     init_python_env()
 
-    # add here
-    get_nongli("http://data.weather.gov.hk/gts/time/calendar/text/", 1901, 2100) # 2100  1901
-    #get_nongli2("http://data.weather.gov.hk/gts/time/calendar/text/", 1901, 2100) # 2100  1901
+    year1 = 1901
+    year2 = 2100
+    get_nongli("http://data.weather.gov.hk/gts/time/calendar/text/", year1, year2) # 2100  1901
+    print('-------------------------------------------\n')
+    #get_nongli2("http://data.weather.gov.hk/gts/time/calendar/text/", year1, year2) # 2100  1901
