@@ -6,7 +6,7 @@
 ''' os path test sample '''
 
 import os.path
-
+import os
 file="test.txt"
 def path_test(file):
     print("abspath: %s" % os.path.abspath(file))
@@ -29,6 +29,20 @@ def path_test(file):
     print("relpath: %s" % os.path.relpath(file))
     print(os.path.split(file))
 
+# 创建多级目录
+def my_mkdir(dir):
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+
+# 截取文件名（含后缀名）
+def got_onlyfilename(path):
+    #return path.split("/")[-1]
+    return os.path.basename(path)
+
+# 不要后缀名、不要目录
+def got_onlyfilename_noext(path):
+    f = os.path.basename(path)
+    return f.split(".")[0]
 
 #### main
 if __name__ == '__main__':
