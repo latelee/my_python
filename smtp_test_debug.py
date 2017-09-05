@@ -25,7 +25,7 @@ to_email = ['aa@163.com'] # 多个收件人，在其后添加
 smtpserver = 'smtp.exmail.qq.com'
 snd_email = 'XXX@XXX.com.cn'
 username = snd_email
-password = b'333F333sd32F5MjAxMUpKTA=='
+password = b'333F333sd32F5MjAxMUpKT###A=='
 
 def send_email(to_list, sub, content):
     msg = MIMEText(content, 'html', 'utf-8')

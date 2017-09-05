@@ -11,23 +11,23 @@ import email.utils
 from email.mime.text import MIMEText
 
 # 接收邮件地址
-to_email = 'latelee@163.com'
-#to_email = str.splitfields(to_email, ",")
+to_email = 'li@latelee.org'
+# TODO：群发多个email
+#to_email = str.split(to_email, ",")
 
-# 发送者信(最好是马甲邮箱)
-smtpserver = 'smtp.163.com'
-snd_email = 'rtl8019ads@163.com'
+# 发送者信息
+smtpserver = 'smtp.exmail.qq.com'
+snd_email = 'robot@latelee.org'
 username = snd_email
-password = b'ccccccnRsceeggO3DAxOWFzPeTEwMA=='
-
+password = b'Um9ib3QhPTI1MAo='
 
 subject = 'python email test'
 
 def send_email(to_list, sub, content):
     msg = MIMEText(content, 'html', 'utf-8')
     msg['Subject'] = sub
-    #msg['From'] = email.utils.formataddr(('py发送者', snd_email)) # 发件人：py发送者<xxx@163.com>
-    msg['From'] = snd_email
+    msg['From'] = email.utils.formataddr(('py智能机器人', snd_email)) # 发件人：py发送者<xxx@163.com>
+    #msg['From'] = snd_email
     msg['To'] = to_list
     #msg['Date'] = formatdate(localtime=True)
 
@@ -35,6 +35,7 @@ def send_email(to_list, sub, content):
         smtp = smtplib.SMTP()
         smtp.connect(smtpserver)
         smtp.login(username, bytes.decode(base64.b64decode(password)))
+        #smtp.login(username, bytes.decode(password))
         smtp.sendmail(snd_email, to_list, msg.as_string())
         smtp.quit()
         return 0
@@ -44,7 +45,7 @@ def send_email(to_list, sub, content):
 
 # main...
 if __name__ == '__main__':  
-    if send_email(to_email, "hello", "hello world") == 0:  
+    if send_email(to_email, "hello", "hello world!\n This is python robot from robot") == 0:  
         print("send %s ok" % to_email)
     else:  
         print("send failed")

@@ -17,6 +17,11 @@ def init_python_env():
 if __name__ == '__main__':
     init_python_env()
     # add here
+    if (len(sys.argv) < 3):
+        print("usage: %s " % (sys.argv[0]))
+        quit()
+    #for arg in sys.argv:   
+    #    print(arg) 
 
 
 
