@@ -100,5 +100,10 @@ def init_python_env():
 #### main
 if __name__ == '__main__':
     init_python_env()
-    #generate_haar_posimage("pos_image", "pos_image.txt")
-    generate_haar_negimage("src", "out")
+    if (len(sys.argv) < 3):
+        print("usage: %s <input dir> <pos_image.txt>" % (sys.argv[0]))
+        quit()
+    #for arg in sys.argv:   
+    #    print(arg) 
+    generate_haar_posimage(sys.argv[1], sys.argv[2])
+    #generate_haar_negimage("src", "out")

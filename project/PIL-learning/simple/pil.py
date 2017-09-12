@@ -1,11 +1,7 @@
 # encoding: utf-8
 # Author: Late Lee
-# 2017.8.29
-# linux+python3
-#
-# haar训练正样本提取
-# 根据pos_image目录下的文件（注：未对后缀名做判断），生成pos_image.txt文件，
-# 该文件内容：文件名 1 0 0 宽 高
+# 
+# pil库 读取并转换图片格式
 
 
 import os
@@ -23,8 +19,7 @@ def show_image(file):
     print(type(img)) # PIL图像对象
     print(img.format, img.size, img.mode)
     #plt.imshow(img)
-    img.convert('L')
-    img.show()
+    img.save("foo.bmp")
 
 def init_python_env():
     if sys.version_info.major == 2:
@@ -34,5 +29,4 @@ def init_python_env():
 #### main
 if __name__ == '__main__':
     init_python_env()
-    #generate_haar_posimage("pos_image", "pos_image.txt")
-    show_image("IMG_20170810_001.jpg_1.jpg")
+    show_image("foo.jpg_1.jpg")
