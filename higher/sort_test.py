@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 # encoding: utf-8
 
-# ÅÅĞòÊ¾Àı
+# æ’åºç¤ºä¾‹
 
 from operator import itemgetter, attrgetter
 
-print(sorted('123456', key=None, reverse=True)); # ·´Ğò
+print(sorted('123456', key=None, reverse=True)); # ååº
 
 print(sorted([1,4,5,2,3,6]));
 
@@ -13,8 +13,8 @@ print(sorted({1:'q',3:'c',2:'g'}.items()));
 
 data = [('red', 1), ('blue', 1), ('red', 2), ('blue', 2)]
 
-# itemgetterÎªÒªÅÅĞòµÄ¶ÔÏóµÄĞòºÅ
-# Èç0±íÊ¾¸ù¾İ×Ö·û£¬1±íÊ¾¸ù¾İÊı×Ö
+# itemgetterä¸ºè¦æ’åºçš„å¯¹è±¡çš„åºå·
+# å¦‚0è¡¨ç¤ºæ ¹æ®å­—ç¬¦ï¼Œ1è¡¨ç¤ºæ ¹æ®æ•°å­—
 print(sorted(data, key=itemgetter(0)));
 
 teamitems = [{'team':'France'     , 'P':1 , 'GD':-3 , 'GS':1 , 'GA':4},
@@ -22,12 +22,12 @@ teamitems = [{'team':'France'     , 'P':1 , 'GD':-3 , 'GS':1 , 'GA':4},
             {'team':'SouthAfrica' , 'P':4 , 'GD':-2 , 'GS':3 , 'GA':5},
             {'team':'Mexico'      , 'P':4 , 'GD':1  , 'GS':3 , 'GA':2}]
 
-# ÒÀ´Î¸ù¾İP¡¢GD¡¢GS¡¢GAÅÅĞò£¬ÉıĞò
+# ä¾æ¬¡æ ¹æ®Pã€GDã€GSã€GAæ’åºï¼Œå‡åº
 a = sorted(teamitems ,key = itemgetter('P','GD','GS','GA'),reverse=True)
 #print(a)
 
-# Ã°ÅİÅÅĞò
-# ¸Ğ¾õÕâ¸öÕı×ÚÒ»Ğ©
+# å†’æ³¡æ’åº
+# æ„Ÿè§‰è¿™ä¸ªæ­£å®—ä¸€äº›
 def bubble_sort(lists):
     count = len(lists)
     for i in range(0, count):
@@ -36,7 +36,7 @@ def bubble_sort(lists):
         print("<<<<<<<<<<<<<[%d] %d" % (i, lists[i])); 
         for j in range(i + 1, count):
             if lists[i] > lists[j]:
-                lists[i], lists[j] = lists[j], lists[i]  # ½»»»
+                lists[i], lists[j] = lists[j], lists[i]  # äº¤æ¢
             print(lists);
         print(">>>>>>>>>>>>>>");
         print("after-------------");
@@ -44,12 +44,12 @@ def bubble_sort(lists):
     return lists
 
 def bubble_sort1(lists):
-    for i in range(len(lists)-1):    # Õâ¸öÑ­»·¸ºÔğÉèÖÃÃ°ÅİÅÅĞò½øĞĞµÄ´ÎÊı
+    for i in range(len(lists)-1):    # è¿™ä¸ªå¾ªç¯è´Ÿè´£è®¾ç½®å†’æ³¡æ’åºè¿›è¡Œçš„æ¬¡æ•°
         print("before-------------");
         print(lists); 
         print("<<<<<<<<<<<<<[%d] %d" % (i, lists[i])); 
-        #for j in range(len(lists)-i-1):  # £êÎªÁĞ±íÏÂ±ê
-        for j in range(i):  # £êÎªÁĞ±íÏÂ±ê
+        #for j in range(len(lists)-i-1):  # ï½Šä¸ºåˆ—è¡¨ä¸‹æ ‡
+        for j in range(i):  # ï½Šä¸ºåˆ—è¡¨ä¸‹æ ‡
             if lists[j] > lists[j+1]:
                 lists[j], lists[j+1] = lists[j+1], lists[j]
             print(lists);
@@ -58,7 +58,7 @@ def bubble_sort1(lists):
         print(lists);
     return lists
 
-# ²åÈëÅÅĞò
+# æ’å…¥æ’åº
 def insert_sort(lists):
     count = len(lists)
     for i in range(1, count):

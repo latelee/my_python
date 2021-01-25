@@ -77,9 +77,9 @@ def profit(name, op, lotsize, quote1, quote2):
     
     usd = get_usd(name)
     if usd == 0: # eg. EUR/USD
-        value = (quote2 - quote1) * losse * lotsize * 100000
+        value = abs(quote2 - quote1) * losse * lotsize * 100000
     elif usd == 1: # eg. USD/JPY
-        value = (quote2 - quote1) * losse * lotsize * 100000 / quote2
+        value = abs(quote2 - quote1) * losse * lotsize * 100000 / quote2
 
     print("profit: $%.4f(RMB:%.4f)" % (value, value*USBRMB_QUOTE))
     return value, value*USBRMB_QUOTE
@@ -114,9 +114,11 @@ if __name__ == '__main__':
     #print("my profit: $%.4f(RMB:%.4f)" % (a, b))
     profit("eur/usd", "buy", 1, 1.07490, 1.07590)
     
+    profit("usd/jpy", "buy", 0.3, 116.542, 112.765)
+    
     # 保证金计算
     bond('EUR/USD', 200, 3, 1.13798)
-    bond('USD/JPY', 100, 0.35, 112.950)
+    bond('USD/JPY', 400, 0.1, 112.950)
 
     # 按任意键退出
     #input("press any key to quit")
